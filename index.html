@@ -776,7 +776,42 @@ top: 2px;
 
 }
 
+/* --- WHATSAPP FLOATING BUBBLE STYLES --- */
+.whatsapp-float-bubble {
+    width: 60px;
+    height: 60px;
+    background: #25d366; /* WhatsApp Green */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: all var(--transition-speed) ease;
+    
+    /* Inherits floating position from .chat-widget */
+}
 
+/* Captivating Floating Bubble Hover/Click Effect */
+.whatsapp-float-bubble:hover {
+    background: #128c7e;
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5);
+}
+
+.whatsapp-float-bubble i {
+    font-size: 1.8rem;
+    color: white;
+    margin: 0; /* Remove default margin from i inside button */
+}
+
+/* Ensure the main .chat-widget container maintains the fixed position */
+.chat-widget {
+    position: fixed;
+    bottom: 30px; 
+    right: 30px; 
+    z-index: 1500;
+}
+  
 .whatsapp-btn {
 
 display: flex;
