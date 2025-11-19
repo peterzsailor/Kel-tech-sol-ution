@@ -1625,13 +1625,17 @@ Today, we continue that mission — helping businesses and individuals stand out
   <script id="app-script">
     // --- ROUTER & GENERAL JS ---
 
-    // Mapping URL hash to the corresponding page container ID
     const routeMap = {
-        '#home': 'home-page',
-        '#about-section': 'about-page',
-        '#services-section': 'services-page',
-        '#portfolio-section': 'portfolio-page',
-        '#contact-section': 'contact-page',
+        '#home': 'home-page', // Main entry hash (used by logo)
+        '#about-section': 'about-page', // Legacy hash supported by nav
+        '#services-section': 'services-page', // Legacy hash supported by nav
+        '#portfolio-section': 'portfolio-page', // Legacy hash supported by nav
+        '#contact-section': 'contact-page', // Legacy hash supported by nav
+        '#home-page': 'home-page', // Direct page container hash
+        '#about-page': 'about-page',
+        '#services-page': 'services-page',
+        '#portfolio-page': 'portfolio-page',
+        '#contact-page': 'contact-page',
         '': 'home-page' // Default case if no hash is present
     };
 
@@ -1642,11 +1646,13 @@ Today, we continue that mission — helping businesses and individuals stand out
     function router() {
         // 1. Determine the target page ID from the URL hash
         const hash = window.location.hash || '#home';
-        const targetPageId = routeMap[hash];
+        // Normalize hash to ensure a valid targetPageId, defaulting if needed
+        const targetPageId = routeMap[hash] || 'home-page';
 
         // 2. Get all page containers and navigation links
         const pageContainers = document.querySelectorAll('.page-container');
         const navLinks = document.querySelectorAll('.nav-link');
+        const navUl = document.querySelector('nav ul');
 
         // 3. Hide all pages and remove active class from links
         pageContainers.forEach(container => {
@@ -1654,9 +1660,12 @@ Today, we continue that mission — helping businesses and individuals stand out
         });
         navLinks.forEach(link => {
             link.classList.remove('active');
-            // Close mobile menu when routing
-            document.querySelector('nav ul').classList.remove('active');
         });
+        
+        // Close mobile menu when routing
+        if (navUl) {
+            navUl.classList.remove('active');
+        }
 
         // 4. Show the target page
         const activePage = document.getElementById(targetPageId);
@@ -1669,12 +1678,19 @@ Today, we continue that mission — helping businesses and individuals stand out
         }
 
         // 5. Set active class on the corresponding navigation link
+        // We check against the original hashes provided in the HTML navigation links
         const activeLink = document.querySelector(`a[href="${hash}"]`);
         if (activeLink) {
             activeLink.classList.add('active');
         } else {
-            // Ensure 'Home' is active if on the root path
-            document.querySelector('a[href="#home"]').classList.add('active');
+            // Check for the link that points to the targetPageId, especially for cases like #home
+            const directLink = document.querySelector(`a[href="#${targetPageId}"]`);
+            if (directLink) {
+                 directLink.classList.add('active');
+            } else {
+                // Ensure 'Home' is active if on the root path
+                document.querySelector('a[href="#home"]').classList.add('active');
+            }
         }
     }
 
@@ -1701,14 +1717,13 @@ Today, we continue that mission — helping businesses and individuals stand out
         'seo-marketing': {
             title: 'SEO and Digital Marketing',
             image: 'https://cdn.pixabay.com/photo/2017/07/03/20/17/colorful-2468874_960_720.jpg',
-            description: 'We enhance your visibility and engagement with proven  digital marketing strategies. Our approach combines  technical SEO optimization with machine learning content creation and intelligent social media outreach to drive targeted traffic and convert visitors into loyal customers.',
+            description: 'We enhance your visibility and engagement with proven digital marketing strategies. Our approach combines technical SEO optimization with machine learning content creation and intelligent social media outreach to drive targeted traffic and convert visitors into loyal customers.',
             subServices: ['SEO Audits and Optimization', 'Machine Learning Content Strategy', 'Intelligent PPC Campaign Management', 'Social Media Management']
         }
     };
 
     // --- Context and Personalization ---
     function updateContextBanner() {
-        // In a real app, this would use geolocation API or IP-based location services
         // For the prototype, we'll use a simple time-based greeting
         const hour = new Date().getHours();
         let greeting;
@@ -1724,7 +1739,6 @@ Today, we continue that mission — helping businesses and individuals stand out
         document.getElementById('location-context').textContent = greeting;
         
         // Update personalized headline based on stored preferences or time
-        // In a real app, this would use data from previous visits or user preferences
         const headlines = [
             "Where Technology Meets Creativity",
             "Transform Your Business with Intelligent Design",
@@ -1748,13 +1762,13 @@ Today, we continue that mission — helping businesses and individuals stand out
         
         document.getElementById('dynamic-headline').textContent = headlines[personalizedIndex];
         document.getElementById('dynamic-subheading').textContent = subheadings[personalizedIndex];
-   
+    
     }
 
 
     // --- SERVICE MODAL LOGIC ---
     const modalOverlay = document.getElementById('service-detail-modal');
-    const closeModalBtn = document.getElementById('close-modal');
+    // const closeModalBtn = document.getElementById('close-modal'); // Not strictly needed as a variable here
     const whatsappLink = document.getElementById('whatsapp-link');
     const whatsappNumber = "254717339298"; // No spaces or symbols
 
@@ -1798,82 +1812,6 @@ Today, we continue that mission — helping businesses and individuals stand out
         document.body.style.overflow = 'auto'; // Restore body scrolling
     }
     
-                    
-                    // For the prototype, we'll just swap to a different stock image
-                    const alternativeImages = {
-                        'corporate-website': 'https://cdn.pixabay.com/photo/2016/11/19/14/16/man-1839500_960_720.jpg',
-                        'brand-identity': 'https://cdn.pixabay.com/photo/2017/12/12/12/44/bitcoin-3014614_960_720.jpg',
-                        'app-design': 'https://cdn.pixabay.com/photo/2017/01/29/13/21/mobile-devices-2017978_960_720.jpg',
-                        'ecommerce': 'https://cdn.pixabay.com/photo/2018/01/28/10/59/internet-3113279_960_720.jpg',
-                        'government services': 'https://mukuyu.wordpress.com/wp-content/uploads/2025/02/stemma-del-kenya1051823999798234531.jpg?w=1024',
-                        'dashboard': 'https://cdn.pixabay.com/photo/2020/01/26/20/14/computer-4795762_960_720.jpg'
-                    };
-                    
-                    image.src = alternativeImages[projectType];
-                    button.textContent = 'Visual Generated!';
-                    button.innerHTML = '<i class="fas fa-check"></i> Visual Generated!';
-                    button.style.background = '#619143';
-                    
-                    // Reset after a few seconds
-                    setTimeout(() => {
-                        button.disabled = false;
-                        button.innerHTML = '<i class="fas fa-magic"></i> Generate New Visual';
-                        button.style.background = '#434d96';
-                        progressBar.style.width = '0%';
-                    }, 3000);
-                }, 1000);
-            }
-        }, 100);
-    }
-    
-            }, 3000);
-        }, 2000);
-    }
-    
-    // --- CHAT FUNCTIONALITY ---
-    function toggleChatWindow() {
-        const chatWindow = document.getElementById('chat-window');
-        chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
-    }
-    
-    function closeChatWindow() {
-        document.getElementById('chat-window').style.display = 'none';
-    }
-    
-    function handleChatMessage() {
-        const inputField = document.getElementById('chat-input-field');
-        const message = inputField.value.trim();
-        
-        if (!message) return;
-        
-        // Clear input field
-        inputField.value = '';
-        
-        // Add user message to chat
-        const chatMessages = document.getElementById('chat-messages');
-        const userMessageDiv = document.createElement('div');
-        userMessageDiv.className = 'message user-message';
-        userMessageDiv.innerHTML = `<p>${message}</p>`;
-        chatMessages.appendChild(userMessageDiv);
-        
-        // Scroll to bottom of chat
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // In a real app, this would call the Magic Loops API
-        // For the prototype, simulate a response after a short delay
-        setTimeout(() => {
-            const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'message bot-message';
-            botMessageDiv.innerHTML = `<p>Thank you for your message! This is a prototype, but in the full version, our team will helpfully response about KelTech's services. How else can I assist you today?</p>`;
-            chatMessages.appendChild(botMessageDiv);
-            
-            // Scroll to bottom again after response
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 1000);
-    }
-    
-    }
-    
     // --- FORM SUBMISSION ---
     function handleFormSubmission(event) {
         event.preventDefault();
@@ -1881,10 +1819,9 @@ Today, we continue that mission — helping businesses and individuals stand out
         const form = event.target;
         const name = form.elements.name.value;
         const email = form.elements.email.value;
-        const subject = form.elements.subject.value;
-        const message = form.elements.message.value;
+        // const subject = form.elements.subject.value; // Kept in form but unused in alert
+        // const message = form.elements.message.value; // Kept in form but unused in alert
         
-        // In a real app, this would send the data to the Magic Loops API
         // For the prototype, just show an alert
         alert(`Thank you, ${name}! Your message has been received. We'll contact you at ${email} shortly.`);
         
@@ -1930,10 +1867,9 @@ Today, we continue that mission — helping businesses and individuals stand out
             }
         });
         
-
         // Contact Form Submission
         document.getElementById('contact-us-form').addEventListener('submit', handleFormSubmission);
     });
-  </script>
+</script>
 </body>
 </html>
